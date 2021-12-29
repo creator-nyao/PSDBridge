@@ -54,11 +54,17 @@ function PSDBox:getTag()
 end
 
 -- ‹ó” iPSD‚Ìî•ñ‚ğ“ü‚ê‚é” j
-local PSDBoxEmpty = {
-  id = 0,
-  ptkf = "",
-  tag = 0,
-}
+local PSDBoxEmpty = {}
+
+function PSDBoxEmpty.new()
+  local self = setmetatable({
+    id = 0,
+    ptkf = "",
+    tag = 0,
+  }, {__index = PSDBoxEmpty})
+
+  return self
+end
 
 function PSDBoxEmpty:getPtkf()
   return ""
@@ -73,9 +79,11 @@ local PSDBridge = {}
 
 -- PSDBoxList‚Ì‰Šú‰»
 function PSDBridge.PSDBoxListInit()
-  return setmetatable(
-    {}, {__index = PSDBoxEmpty}
-  )
+  return setmetatable({}, {
+    __index = function()
+      return PSDBoxEmpty.new()
+    end
+  })
 end
 
 function PSDBridge:addPSDBox(params)
