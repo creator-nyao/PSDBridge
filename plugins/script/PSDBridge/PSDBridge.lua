@@ -104,6 +104,11 @@ function PSDBridge:findPSDBoxById(id)
   return self.PSDBoxList[id]
 end
 
+-- ì¬“r’†‚Å‹C—Í‚ª‚¨–S‚­‚È‚è‚É
+-- function PSDBridge:copyIdToId(fromId, toId)
+  
+-- end
+
 function PSDBridge:init()
   self.PSDBoxList = self.PSDBoxListInit()
 end
