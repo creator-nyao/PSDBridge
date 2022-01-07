@@ -31,14 +31,18 @@ function FilePathEx:getFilePath()
   return self.file_path
 end
 
+function FilePathEx:clone()
+  return self.new(self.file_path ,self.old_base_folder_path)
+end
+
 -- PSD‚Ìî•ñ‚ğ“ü‚ê‚é” 
 local PSDBox = {}
 
-function PSDBox.new(params)
+function PSDBox.new(id, ptkf, tag)
   local self = setmetatable({
-    id = params.id,
-    ptkf = FilePathEx.new(params.ptkf, params.old_aup_folder_path),
-    tag = params.tag,
+    id = id,
+    ptkf = ptkf,
+    tag = tag,
   },{__index = PSDBox})
 
   return self
@@ -53,13 +57,17 @@ function PSDBox:getTag()
   return self.tag
 end
 
+function PSDBox:alterId(new_id)
+  return self.new(new_id, self.ptkf:clone(), self.tag)
+end
+
 -- ‹ó” iPSD‚Ìî•ñ‚ğ“ü‚ê‚é” j
 local PSDBoxEmpty = {}
 
 function PSDBoxEmpty.new()
   local self = setmetatable({
     id = 0,
-    ptkf = "",
+    ptkf = FilePathEx.new("", ""),
     tag = 0,
   }, {__index = PSDBoxEmpty})
 
@@ -72,6 +80,10 @@ end
 
 function PSDBoxEmpty:getTag()
   return 0
+end
+
+function PSDBoxEmpty:alterId(new_id)
+  return self.new(new_id, self.ptkf:clone(), self.tag)
 end
 
 -- PSD‚Ìî•ñ‚ğó‚¯“n‚µ‚·‚é‹´
@@ -87,16 +99,11 @@ function PSDBridge.PSDBoxListInit()
 end
 
 function PSDBridge:addPSDBox(params)
-  self.PSDBoxList[params.id] = PSDBox.new({
-    id=params.id,
-    ptkf=params.ptkf,
-    old_aup_folder_path = params.old_aup_folder_path,
-    tag=params.tag,
-    obj=params.obj,
-  })
+  local ptkf = FilePathEx.new(params.ptkf, params.old_aup_folder_path)
+  self.PSDBoxList[params.id] = PSDBox.new(params.id, ptkf, params.tag)
 end
 
-function PSDBridge:removePSDBox(id)
+function PSDBridge:removePSDBoxById(id)
   self.PSDBoxList[id] = nil
 end
 
@@ -104,10 +111,11 @@ function PSDBridge:findPSDBoxById(id)
   return self.PSDBoxList[id]
 end
 
--- ì¬“r’†‚Å‹C—Í‚ª‚¨–S‚­‚È‚è‚É
--- function PSDBridge:copyIdToId(fromId, toId)
-  
--- end
+function PSDBridge:copyIdToId(from_id, to_id)
+  if from_id ~= nil and to_id ~= nil then
+    self.PSDBoxList[to_id] = self:findPSDBoxById(from_id):alterId(to_id)
+  end
+end
 
 function PSDBridge:init()
   self.PSDBoxList = self.PSDBoxListInit()
