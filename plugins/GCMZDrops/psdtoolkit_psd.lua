@@ -6,8 +6,9 @@ P.priority = 0
 
 function P.ondragenter(files, state)
   for i, v in ipairs(files) do
-    if v.filepath:match("[^.]+$"):lower() == "psd" then
-      -- ファイルの拡張子が psd のファイルがあったら処理できそうなので true
+    local ext = v.filepath:match("[^.]+$"):lower()
+    if ext == "psd" or ext == "psb" then
+      -- ファイルの拡張子が psd か psb のファイルがあったら処理できそうなので true
       return true
     end
   end
@@ -31,8 +32,9 @@ end
 
 function P.ondrop(files, state)
   for i, v in ipairs(files) do
-    -- ファイルの拡張子が psd だったら
-    if v.filepath:match("[^.]+$"):lower() == "psd" then
+    -- ファイルの拡張子が psd か psb だったら
+    local ext = v.filepath:match("[^.]+$"):lower()
+    if ext == "psd" or ext == "psb" then
       local filepath = v.filepath
       local filename = filepath:match("[^/\\]+$")
 
@@ -62,6 +64,7 @@ function P.ondrop(files, state)
       math.randomseed(os.time())
       local tag = math.floor(math.random()*0x7fffffff + 1)
       local proj = GCMZDrops.getexeditfileinfo()
+      local jp = not GCMZDrops.englishpatched()
       local exo = [[
 [exedit]
 width=]] .. proj.width .. "\r\n" .. [[
@@ -75,16 +78,15 @@ audio_ch=]] .. proj.audio_ch .. "\r\n" .. [[
 start=1
 end=64
 layer=1
-group=1
 overlay=1
 camera=0
 [0.0]
-_name=テキスト
-サイズ=1
-表示速度=0.0
-文字毎に個別オブジェクト=0
-移動座標上に表示する=0
-自動スクロール=0
+_name=]] .. (jp and [[テキスト]] or [[Text]]) .. "\r\n" .. [[
+]] .. (jp and [[サイズ]] or [[Size]]) .. [[=1
+]] .. (jp and [[表示速度]] or [[vDisplay]]) .. [[=0.0
+]] .. (jp and [[文字毎に個別オブジェクト]] or [[1char1obj]]) .. [[=0
+]] .. (jp and [[移動座標上に表示する]] or [[Show on motion coordinate]]) .. [[=0
+]] .. (jp and [[自動スクロール]] or [[Automatic scrolling]]) .. [[=0
 B=0
 I=0
 type=0
@@ -97,16 +99,16 @@ spacing_y=0
 precision=0
 color=ffffff
 color2=000000
-font=MS UI Gothic
+font=]] .. (jp and [[MS UI Gothic]] or [[Segoe UI]]) .. "\r\n" .. [[
 text=]] .. GCMZDrops.encodeexotext("<?  -- PSDBridge準備 " .. filename .. "\r\n\r\nlocal id = obj.layer     -- ID\r\nlocal ptkf=" .. P.encodelua(filepath) .. "\r\nlocal old_aup_folder_path = " .. P.encodelua(aup_folder_path) .. "\r\nlocal tag = " .. tag .. "     -- 識別用タグ\r\n\r\n\r\n-- 以下は書き換えないでください\r\nrequire(\"PSDBridge\"):addPSDBox({\r\n  id=id,\r\n  ptkf=ptkf,\r\n  tag=tag,\r\n  obj=obj,\r\n  old_aup_folder_path=old_aup_folder_path,\r\n})\r\n\r\n-- 何も出力しないと直後のアニメーション効果以外適用されないため\r\n-- それに対するワークアラウンド\r\nmes(\" \")\r\n\r\n\r\n\r\n\r\n\r\n-- エラーにならない為だけの受け皿\r\nlocal ptkl=\"\"\r\n?>") .. "\r\n" .. [[
 [0.1]
-_name=標準描画
+_name=]] .. (jp and [[標準描画]] or [[Standard drawing]]) .. "\r\n" .. [[
 X=0.0
 Y=0.0
 Z=0.0
-拡大率=100.00
-透明度=0.0
-回転=0.00
+]] .. (jp and [[拡大率]] or [[Zoom%]]) .. [[=100.00
+]] .. (jp and [[透明度]] or [[Clearness]]) .. [[=0.0
+]] .. (jp and [[回転\]] or [[Rotation]]) .. [[=0.00
 blend=0
 ]]
 
