@@ -58,7 +58,8 @@ function P.ondrop(files, state)
       rikky_module = require("rikky_module")
       local aup_file_path = rikky_module.getinfo("aup")
       local aup_filename = rikky_module.getinfo("aup",1)
-      local aup_folder_path = string.gsub(aup_file_path, "("..aup_filename.."%.aup)", "")
+      -- local aup_folder_path = string.gsub(aup_file_path, "("..aup_filename.."%.aup)", "")
+      local aup_folder_path = aup_file_path:sub(0, #aup_file_path - string.len(aup_filename..".aup"))
 
       -- ファイルを直接読み込む代わりに exo ファイルを組み立てる
       math.randomseed(os.time())

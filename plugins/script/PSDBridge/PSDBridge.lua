@@ -5,7 +5,8 @@ local Helpers = {
 function Helpers:getCurrentAupFolderPath()
   local aup_file_path = self.rikkyModule.getinfo("aup")
   local aup_filename = self.rikkyModule.getinfo("aup",1)
-  return string.gsub(aup_file_path, "("..aup_filename.."%.aup)$", "")
+  -- return string.gsub(aup_file_path, "("..aup_filename.."%.aup)$", "")
+  return aup_file_path:sub(0, #aup_file_path - string.len(aup_filename..".aup"))
 end
 
 -- 拡張ファイルパス
